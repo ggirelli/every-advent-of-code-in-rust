@@ -1,11 +1,12 @@
 use anyhow::{Error, Result};
-use std::fs::read_to_string;
 use std::path::PathBuf;
+
+use crate::io::read_chars;
 
 /// Find final floor based on instructions.
 pub fn run_part_1(input: PathBuf) -> Result<(), Error> {
     let mut current_position: i32 = 0;
-    for instruction in read_to_string(input)?.chars() {
+    for instruction in read_chars(input)? {
         match instruction {
             '(' => current_position += 1,
             ')' => current_position -= 1,
@@ -19,7 +20,7 @@ pub fn run_part_1(input: PathBuf) -> Result<(), Error> {
 /// Find first time in the basement, base-1 index.
 pub fn run_part_2(input: PathBuf) -> Result<(), Error> {
     let mut current_position: i32 = 0;
-    for (pos, instruction) in read_to_string(input)?.chars().enumerate() {
+    for (pos, instruction) in read_chars(input)?.iter().enumerate() {
         match instruction {
             '(' => current_position += 1,
             ')' => current_position -= 1,
