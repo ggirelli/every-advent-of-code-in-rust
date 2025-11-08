@@ -33,3 +33,14 @@ pub fn read_lines(input: PathBuf) -> Result<Vec<String>, Error> {
             .collect()
     })
 }
+
+/// Get file content as a single string. Supports GZ compression.
+pub fn read(input: PathBuf) -> Result<String, Error> {
+    Ok(if input.to_str().unwrap_or(".").ends_with(".gz") {
+        let mut out_string: String = String::new();
+        BufReader::new(GzDecoder::new(File::open(input)?)).read_to_string(&mut out_string)?;
+        out_string
+    } else {
+        read_to_string(input)?
+    })
+}
