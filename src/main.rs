@@ -11,16 +11,9 @@ use every_advent_of_code::calendar::{year_2015, year_2025};
 #[command(version, about, long_about = None)]
 struct Args {
     /// Path to input link_assoc file. Supports CSV and CSV.GZ.
-    #[arg(short, long)]
     input: PathBuf,
-
-    #[arg(short, long)]
     year: usize,
-
-    #[arg(short, long)]
     day: usize,
-
-    #[arg(short, long)]
     part: usize,
 
     #[arg(short, long, default_value_t = false)]
