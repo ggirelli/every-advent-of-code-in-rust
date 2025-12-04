@@ -659,6 +659,7 @@ dependencies = [
  "anyhow",
  "clap",
  "flate2",
+ "itertools",
  "md5",
  "nalgebra",
  "nalgebra-sparse",
