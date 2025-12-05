@@ -2,6 +2,6 @@
 
 Every Advent of Code, in Rust
 
-Run with `just <year> <day> <part> <input>`.
+Run with `cargo run --release -- <data> <year> <day> <part>`.
 
-My puzzle inputs are stored in `./data/`
+For example: `cargo run --release -- input.txt 2025 03 2`.
