@@ -9,7 +9,7 @@ fn is_id_invalid(id: &str) -> Result<bool, Error> {
     if id.starts_with('0') {
         return Ok(false);
     }
-    if id.len() % 2 == 0 {
+    if id.len().is_multiple_of(2) {
         if id[0..(id.len() / 2)] == id[(id.len() / 2)..id.len()] {
             Ok(true)
         } else {
