@@ -1,4 +1,7 @@
-use std::{collections::HashSet, path::PathBuf};
+use std::{
+    collections::{HashMap, HashSet},
+    path::PathBuf,
+};
 
 use anyhow::{Error, Result};
 
@@ -61,14 +64,51 @@ fn count_splits(parsed_map: ParsedMap) -> Result<usize, Error> {
     Ok(split_counter)
 }
 
+fn add_timeline(
+    mut trace: HashMap<(i64, i64), usize>,
+    k: (i64, i64),
+    v0: usize,
+) -> Result<HashMap<(i64, i64), usize>, Error> {
+    match trace.get_mut(&k) {
+        Some(v) => {
+            *v += v0;
+        }
+        None => {
+            trace.insert(k, v0);
+        }
+    }
+    Ok(trace)
+}
+
+fn count_timelines(parsed_map: ParsedMap) -> Result<usize, Error> {
+    let mut rays_positions: HashMap<(i64, i64), usize> = HashMap::new();
+    rays_positions.insert(parsed_map.source, 1);
+    for _ in 0..parsed_map.nrows {
+        let mut trace: HashMap<(i64, i64), usize> = HashMap::new();
+        for (ray, &counter) in rays_positions.iter() {
+            let new_position: (i64, i64) = (ray.0 + 1, ray.1);
+            if parsed_map.splitters.contains(&new_position) {
+                trace = add_timeline(trace, (new_position.0, new_position.1 - 1), counter)?;
+                trace = add_timeline(trace, (new_position.0, new_position.1 + 1), counter)?;
+            } else {
+                trace = add_timeline(trace, new_position, counter)?;
+            }
+        }
+        rays_positions = trace;
+    }
+    Ok(rays_positions.values().sum())
+}
+
 pub fn run_part_1(input: PathBuf) -> Result<(), Error> {
     let num_splits: usize = count_splits(parse_map(read_lines(input)?)?)?;
     tracing::info!("The ray splits {} times.", num_splits);
     Ok(())
 }
 
-pub fn run_part_2(_input: PathBuf) -> Result<(), Error> {
-    Err(Error::msg("Not implemented."))
+pub fn run_part_2(input: PathBuf) -> Result<(), Error> {
+    let num_splits: usize = count_timelines(parse_map(read_lines(input)?)?)?;
+    tracing::info!("The ray splits {} times.", num_splits);
+    Ok(())
 }
 
 #[cfg(test)]
@@ -104,6 +144,27 @@ mod tests {
 
     #[test]
     fn test_part_2() -> Result<(), Error> {
+        assert_eq!(
+            count_timelines(parse_map(vec![
+                ".......S.......".to_string(),
+                "...............".to_string(),
+                ".......^.......".to_string(),
+                "...............".to_string(),
+                "......^.^......".to_string(),
+                "...............".to_string(),
+                ".....^.^.^.....".to_string(),
+                "...............".to_string(),
+                "....^.^...^....".to_string(),
+                "...............".to_string(),
+                "...^.^...^.^...".to_string(),
+                "...............".to_string(),
+                "..^...^.....^..".to_string(),
+                "...............".to_string(),
+                ".^.^.^.^.^...^.".to_string(),
+                "...............".to_string(),
+            ])?)?,
+            40
+        );
         Ok(())
     }
 }
